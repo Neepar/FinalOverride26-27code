@@ -1,8 +1,10 @@
 
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "pros/misc.h"
 #include "robotConfigs.h"
 
+// Functions with Button
 /**
  * A callback function for LLEMU's center button.
  *
@@ -27,9 +29,13 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-	pros::lcd::register_btn1_cb(on_center_button);
-	chassis.calibrate(); // <-- required for LemLib odometry to function
+	chassis.calibrate(); // this handles IMU calibration/reset internally
+	
+	while (imu.is_calibrating()) {
+		pros::delay(10);
+	}
+	
+	pros::lcd::print(3, "IMU Ready!");
 }
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -63,11 +69,13 @@ void competition_initialize() {}
 void autonomous() {
     chassis.setPose(0, 0, 0);
     chassis.moveToPoint(0, 10, 2000);
+	chassis.turnToHeading(90, 2000);
+
 }
 
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-
+	bool HoldFunction = false;
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -79,6 +87,15 @@ void opcontrol() {
 		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
 		leftMotors.move(dir - turn);                      // Sets left motor voltage
 		rightMotors.move(dir + turn);                     // Sets right motor voltage
-		pros::delay(20);                               // Run for 20 ms then update
+		pros::delay(20);         
+		// Run for 20 ms then update
+
+		// Buttons
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {  // If B is pressed, toggle HoldFunction
+			HoldFunction = !HoldFunction;
+			leftMotors.set_brake_mode(HoldFunction ? pros::E_MOTOR_BRAKE_HOLD : pros::E_MOTOR_BRAKE_COAST);
+			rightMotors.set_brake_mode(HoldFunction ? pros::E_MOTOR_BRAKE_HOLD : pros::E_MOTOR_BRAKE_COAST);
+		}
+		master.print(0, 0, "Hold Mode: %s", HoldFunction ? "ON" : "OFF");
 	}
 }
