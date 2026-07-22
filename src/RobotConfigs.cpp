@@ -3,6 +3,11 @@
 #include "lemlib/api.hpp"
 #include "robotConfigs.h"
 
+// Motors for functions
+pros::Motor ElevatorMotor1(5); //Change these ports to match your robot
+pros::Motor ElevatorMotor2(6); //Change these ports to match your robot
+
+
 pros::MotorGroup leftMotors({-15, 17, -19}, pros::MotorGearset::blue); // left motor group - ports 3 (reversed), 4, 5 (reversed)
 pros::MotorGroup rightMotors({-14, 16, 20}, pros::MotorGearset::blue); // right motor group - ports 6, 7, 9 (reversed)
 

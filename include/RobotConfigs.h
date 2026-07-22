@@ -3,6 +3,10 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 
+
+extern pros::Motor ElevatorMotor1;
+extern pros::Motor ElevatorMotor2;
+
 extern pros::MotorGroup leftMotors;
 extern pros::MotorGroup rightMotors;
 extern lemlib::Chassis chassis;

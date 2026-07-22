@@ -1,6 +1,7 @@
 
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "lemlib/chassis/chassis.hpp"
 #include "pros/misc.h"
 #include "robotConfigs.h"
 
@@ -72,10 +73,24 @@ void autonomous() {
 	chassis.turnToHeading(90, 2000);
 
 }
+//Real autonomous program template
+//Toggle shift
+//Manually measure some of these distances btw
+	// 1. Move forward 8 inches
+	// 2. Move backward 8 inches at ideal speed
+	// 3. Move forward 8 inches
+	// 4. Move backward 8 inches at ideal speed
+	// 5. Move forward <= 24 inches
+	// 6. Turn left 90 degrees 
+	// 7. Go forward about <= 20 inches
+	// 8. Score yellow pin 
+	// Total score: 15 points + 12 point bonus = 27 points
 
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	bool HoldFunction = false;
+	bool ElevatorUp = false;
+	bool ElevatorDown = true;
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -85,9 +100,9 @@ void opcontrol() {
 		// Arcade control scheme
 		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
 		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		leftMotors.move(dir - turn);                      // Sets left motor voltage
-		rightMotors.move(dir + turn);                     // Sets right motor voltage
-		pros::delay(20);         
+		leftMotors.move(dir + turn);                      // Sets left motor voltage
+		rightMotors.move(dir - turn);                     // Sets right motor voltage
+		pros::delay(20);
 		// Run for 20 ms then update
 
 		// Buttons
@@ -97,5 +112,19 @@ void opcontrol() {
 			rightMotors.set_brake_mode(HoldFunction ? pros::E_MOTOR_BRAKE_HOLD : pros::E_MOTOR_BRAKE_COAST);
 		}
 		master.print(0, 0, "Hold Mode: %s", HoldFunction ? "ON" : "OFF");
+
+		// if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+		// 	ElevatorUp = !ElevatorUp;
+		// 	ElevatorDown = false;
+		// 	ElevatorMotor1.move_velocity(ElevatorUp ? 200 : 0);
+		// 	ElevatorMotor2.move_velocity(ElevatorUp ? 200 : 0);
+		// }
+		// if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
+		// 	ElevatorDown = !ElevatorDown;
+		// 	ElevatorUp = false;
+		// 	ElevatorMotor1.move_velocity(ElevatorDown ? -200 : 0);
+		// 	ElevatorMotor2.move_velocity(ElevatorDown ? -200 : 0);
+		// }
+		
 	}
 }
