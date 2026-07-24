@@ -3,6 +3,7 @@
 #include "lemlib/api.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "pros/misc.h"
+#include "pros/rtos.hpp"
 #include "robotConfigs.h"
 
 // Functions with Button
@@ -31,6 +32,7 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	chassis.calibrate(); // this handles IMU calibration/reset internally
+	// ColorSensor.set_led_pwm(80); //Change if you want
 	
 	while (imu.is_calibrating()) {
 		pros::delay(10);
@@ -69,8 +71,21 @@ void competition_initialize() {}
  */
 void autonomous() {
     chassis.setPose(0, 0, 0);
-    chassis.moveToPoint(0, 10, 2000);
-	chassis.turnToHeading(90, 2000);
+	chassis.moveToPose(0, 100, 90, 4000, {.lead = 0.4, .maxSpeed = 50});
+	chassis.moveToPose(25, 100, 180, 4000, {.lead = 0.4, .maxSpeed = 50});
+	chassis.moveToPose(0, 8, 0, 2000, {.lead = 0.4, .maxSpeed = 90});
+	chassis.moveToPose(0, 0, 0, 2000, {.forwards = false, .maxSpeed = 105});
+	chassis.moveToPose(0, 8, 0, 2000, {.lead = 0.4, .maxSpeed = 90});
+	chassis.moveToPose(0, 0, 0, 2000, {.forwards = false, .maxSpeed = 105});
+	chassis.moveToPose(0, 24, 90, 4000, {.lead = 0.4, .maxSpeed = 50});
+	chassis.moveToPose(0, 0, 0, 2000, {.forwards = false, .maxSpeed = 105});
+
+    lemlib::Pose pose = chassis.getPose();
+    pros::lcd::print(0, "X: %.2f", pose.x);
+    pros::lcd::print(1, "Y: %.2f", pose.y);
+    pros::lcd::print(2, "Theta: %.2f", pose.theta);
+    // chassis.moveToPoint(0, 10, 2000);
+	// chassis.turnToHeading(90, 2000);
 
 }
 //Real autonomous program template
@@ -89,8 +104,6 @@ void autonomous() {
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	bool HoldFunction = false;
-	bool ElevatorUp = false;
-	bool ElevatorDown = true;
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -100,12 +113,10 @@ void opcontrol() {
 		// Arcade control scheme
 		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
 		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		leftMotors.move(dir + turn);                      // Sets left motor voltage
-		rightMotors.move(dir - turn);                     // Sets right motor voltage
-		pros::delay(20);
-		// Run for 20 ms then update
+		chassis.arcade(dir, turn);
 
 		// Buttons
+		// Hold Mode
 		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {  // If B is pressed, toggle HoldFunction
 			HoldFunction = !HoldFunction;
 			leftMotors.set_brake_mode(HoldFunction ? pros::E_MOTOR_BRAKE_HOLD : pros::E_MOTOR_BRAKE_COAST);
@@ -113,18 +124,62 @@ void opcontrol() {
 		}
 		master.print(0, 0, "Hold Mode: %s", HoldFunction ? "ON" : "OFF");
 
-		// if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-		// 	ElevatorUp = !ElevatorUp;
-		// 	ElevatorDown = false;
-		// 	ElevatorMotor1.move_velocity(ElevatorUp ? 200 : 0);
-		// 	ElevatorMotor2.move_velocity(ElevatorUp ? 200 : 0);
+// 		// Elevator Control
+// if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+//     ElevatorMotor1.move_velocity(200);
+//     ElevatorMotor2.move_velocity(200);
+// } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+//     ElevatorMotor1.move_velocity(-200);
+//     ElevatorMotor2.move_velocity(-200);
+// } else {
+//     ElevatorMotor1.move_velocity(0);
+//     ElevatorMotor2.move_velocity(0);
+// }
+
+		// // Scoring 
+		// if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+		// 	ScoringMotor.move_velocity(150);
+		// } 
+		// else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+		// 	ScoringMotor.move_velocity(-150);
+		// } 
+		// else {
+		// 	ScoringMotor.move_velocity(0);
 		// }
-		// if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
-		// 	ElevatorDown = !ElevatorDown;
-		// 	ElevatorUp = false;
-		// 	ElevatorMotor1.move_velocity(ElevatorDown ? -200 : 0);
-		// 	ElevatorMotor2.move_velocity(ElevatorDown ? -200 : 0);
-		// }
-		
+
+// 		// Intake
+// 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+// 			IntakeMotor.move_velocity(200);
+// 		} 
+// 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+// 			IntakeMotor.move_velocity(-200);
+// 		} 
+// 		else {
+// 			IntakeMotor.move_velocity(0);
+// 		}
+
+// 	// Color sensor for blue case
+// 	double color = ColorSensor.get_hue();
+// 	if (color >= 235 && color <= 275 && IntakeMotor.get_actual_velocity() > 0) {
+// 	    IntakeMotor.move_velocity(-200); // reverse - reject the blue pin
+// 	} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+// 	    IntakeMotor.move_velocity(200); // normal intake
+// 	} else {
+//     IntakeMotor.move_velocity(0); // stop
+// }
+
+	// // Color sensor for red case
+	// double color = ColorSensor.get_hue();
+	// if (color >= 0 && color <= 60 && IntakeMotor.get_actual_velocity() > 0) {
+	//     IntakeMotor.move_velocity(-200); // reverse - reject the red pin
+	// } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+	//     IntakeMotor.move_velocity(200); // normal intake
+	// } else {
+	//     IntakeMotor.move_velocity(0); // stop
+	// }
+
+	// Just comment color sort for not color sort
+
+		pros::delay(20);
 	}
 }

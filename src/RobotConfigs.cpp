@@ -1,11 +1,16 @@
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "pros/optical.hpp"
 #include "robotConfigs.h"
 
-// Motors for functions
-pros::Motor ElevatorMotor1(5); //Change these ports to match your robot
-pros::Motor ElevatorMotor2(6); //Change these ports to match your robot
+// // Motors/Sensors for functions
+// pros::Motor ElevatorMotor1(5); //Change these ports to match your robot
+// pros::Motor ElevatorMotor2(6); //Change these ports to match your robot
+// pros::Motor ScoringMotor(7); //Change this port to match your robot
+// pros::Optical ColorSensor(27); //Change this port to match your robot
+// pros::Motor IntakeMotor(18); //Change this port to match your robot
+
 
 
 pros::MotorGroup leftMotors({-15, 17, -19}, pros::MotorGearset::blue); // left motor group - ports 3 (reversed), 4, 5 (reversed)
@@ -18,7 +23,7 @@ pros::MotorGroup rightMotors({-14, 16, 20}, pros::MotorGearset::blue); // right 
 lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
                               11.2, // 11.2 inch track width
-                              lemlib::Omniwheel::NEW_275, // using new 4" omnis
+                              lemlib::Omniwheel::NEW_275, // using new 2.75" omnis
                               600, // drivetrain rpm is 600
                               2 // horizontal drift is 2 (for now)
 );
@@ -51,9 +56,9 @@ lemlib::ControllerSettings lateral_controller(8.3, // kP
                                               500, // large error range timeout, ms
                                               20 // max acceleration (slew)
 );
-lemlib::ControllerSettings angular_controller(2.85, // kP
+lemlib::ControllerSettings angular_controller(3.5, // kP - 2.85 before
                                               0, // kI
-                                              1.8, // kD - raised from 1
+                                              3, // kD - raised from 1
                                               3, // anti windup
                                               0.5, // small error range, in degrees
                                               100, // small error range timeout, ms
