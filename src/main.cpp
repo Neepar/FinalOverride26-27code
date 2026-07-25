@@ -71,14 +71,7 @@ void competition_initialize() {}
  */
 void autonomous() {
     chassis.setPose(0, 0, 0);
-	chassis.moveToPose(0, 100, 90, 4000, {.lead = 0.4, .maxSpeed = 50});
-	chassis.moveToPose(25, 100, 180, 4000, {.lead = 0.4, .maxSpeed = 50});
-	chassis.moveToPose(0, 8, 0, 2000, {.lead = 0.4, .maxSpeed = 90});
-	chassis.moveToPose(0, 0, 0, 2000, {.forwards = false, .maxSpeed = 105});
-	chassis.moveToPose(0, 8, 0, 2000, {.lead = 0.4, .maxSpeed = 90});
-	chassis.moveToPose(0, 0, 0, 2000, {.forwards = false, .maxSpeed = 105});
-	chassis.moveToPose(0, 24, 90, 4000, {.lead = 0.4, .maxSpeed = 50});
-	chassis.moveToPose(0, 0, 0, 2000, {.forwards = false, .maxSpeed = 105});
+	chassis.moveToPoint(0, 25, 999999);	
 
     lemlib::Pose pose = chassis.getPose();
     pros::lcd::print(0, "X: %.2f", pose.x);
