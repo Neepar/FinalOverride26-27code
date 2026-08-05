@@ -7,8 +7,8 @@
 #include "pros/optical.hpp"
 
 // Motors for Functions
-// extern pros::Motor ElevatorMotor1;
-// extern pros::Motor ElevatorMotor2;
+extern pros::Motor ElevatorMotor1;
+extern pros::Motor ElevatorMotor2;
 // extern pros::Motor ScoringMotor;
 // extern pros::Motor IntakeMotor;
 // extern pros::Optical ColorSensor;
