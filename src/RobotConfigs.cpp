@@ -11,7 +11,8 @@ pros::Motor ScoringMotor1(9); //Change this port to match your robot
 // pros::Optical ColorSensor(27); //Change this port to match your robot
 // pros::Motor IntakeMotor(18); //Change this port to match your robot
 
-//Controllers
+
+//Controllers for robot
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 
