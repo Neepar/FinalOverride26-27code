@@ -96,6 +96,7 @@ void autonomous() {
 	// 7. Go forward about <= 20 inches
 	// 8. Score yellow pin 
 	// Total score: 15 points + 12 point bonus = 27 points
+	
 
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
@@ -123,10 +124,10 @@ void opcontrol() {
 		master.print(0, 0, "Hold Mode: %s", HoldFunction ? "ON" : "OFF");
 
 	// Motorized Claw control
-	if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+	if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 	ScoringMotor1.move_velocity(600);
 	}
-	else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+	else if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 		ScoringMotor1.move_velocity(-600);
 	}
 	else {
@@ -134,7 +135,7 @@ void opcontrol() {
 	}
 		// Elevator Control
 
-if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	ElevatorMotor1.brake();
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(600);
@@ -142,7 +143,7 @@ if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	// pros::lcd::print(3, "Elevator Up");
 
 } 
-else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+else if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 	ElevatorMotor1.brake();
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(-600);
@@ -153,7 +154,7 @@ else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 	 ElevatorMotor2.move_velocity(0);
 	//  pros::lcd::print(5, "Elevator Still");
 }
-// if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+// if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 // 	ElevatorMotor1.brake();
 // 	ElevatorMotor2.brake();
 //     ElevatorMotor1.move_velocity(600);

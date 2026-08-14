@@ -12,6 +12,8 @@ extern pros::Motor ElevatorMotor2;
 extern pros::Motor ScoringMotor1;
 // extern pros::Motor IntakeMotor;
 // extern pros::Optical ColorSensor;
+extern pros::Controller master;
+extern pros::Controller partner;
 
 
 //Drivetrain stuff

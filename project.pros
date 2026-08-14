@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "final26-27codeF",
+    "project_name": "TwoController26-27",
     "target": "v5",
     "templates": {
       "LemLib": {
