@@ -42,8 +42,9 @@ void initialize() {
 	}
 	
 	pros::lcd::print(3, "IMU Ready!");
-	ElevatorMotor1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	ElevatorMotor2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	// ElevatorMotor1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	// ElevatorMotor2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	// pros::lcd::print(4, "Brake mode hold");
 }
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -77,35 +78,11 @@ void competition_initialize() {}
 
 
 void autonomous() {
-    pros::lcd::print(3, "Calibrating IMU...");
-    imu.reset();
-
-    int timeout = 3000;
-    int waited = 0;
-    while (imu.is_calibrating() && waited < timeout) {
-        pros::delay(10);
-        waited += 10;
-    }
-
-    if (imu.is_calibrating()) {
-        pros::lcd::print(3, "IMU FAILED to calibrate!");
-        return;
-    }
-
-    // Continuously print the current angle before the turn
-    for (int i = 0; i < 150; i++) { // ~3 seconds at 20ms
-        pros::lcd::print(3, "Heading: %.2f", imu.get_heading());
-        pros::delay(20);
-    }
-
-    chassis.setPose(0, 0, 0);
-    chassis.turnToHeading(90, 3000);
-
-    // Continuously print the angle after the turn too, so you can check accuracy
-    for (int i = 0; i < 150; i++) {
-        pros::lcd::print(3, "Final Heading: %.2f", imu.get_heading());
-        pros::delay(20);
-    }
+    chassis.setPose(0,0,0);
+	ScoringMotor1.move_velocity(600);
+	chassis.moveToPose(0, 10, 0, 9999);
+	chassis.turnToHeading(-90, 2000);
+	chassis.moveToPose(-20, 10, -90, 9999);
 }
 //Real autonomous program template
 //Toggle shift
@@ -125,7 +102,7 @@ void opcontrol() {
 	bool HoldFunction = false;
 	bool ElevatorResist = false;
 	bool WasL1pressed = false;
-	
+	bool clawOpen=false;
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
@@ -145,52 +122,61 @@ void opcontrol() {
 		}
 		master.print(0, 0, "Hold Mode: %s", HoldFunction ? "ON" : "OFF");
 
-
-
+	// Motorized Claw control
+	if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+	ScoringMotor1.move_velocity(600);
+	}
+	else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+		ScoringMotor1.move_velocity(-600);
+	}
+	else {
+		ScoringMotor1.move_velocity(0);
+	}
 		// Elevator Control
-		
+
 if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	ElevatorMotor1.brake();
 	ElevatorMotor2.brake();
-    ElevatorMotor1.move_velocity(600);
-    ElevatorMotor2.move_velocity(-600);
-	pros::lcd::print(3, "Elevator Up");
+	ElevatorMotor1.move_velocity(600);
+	ElevatorMotor2.move_velocity(-600);
+	// pros::lcd::print(3, "Elevator Up");
 
-} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+} 
+else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 	ElevatorMotor1.brake();
 	ElevatorMotor2.brake();
-    ElevatorMotor1.move_velocity(-600);
-    ElevatorMotor2.move_velocity(600);
-	pros::lcd::print(3, "Elevator Down");
+	ElevatorMotor1.move_velocity(-600);
+	ElevatorMotor2.move_velocity(600);
+	// pros::lcd::print(4, "Elevator Down");
+} else {
+	 ElevatorMotor1.move_velocity(0);
+	 ElevatorMotor2.move_velocity(0);
+	//  pros::lcd::print(5, "Elevator Still");
 }
-else {
-	ElevatorMotor1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	ElevatorMotor2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-}
+// if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+// 	ElevatorMotor1.brake();
+// 	ElevatorMotor2.brake();
+//     ElevatorMotor1.move_velocity(600);
+//     ElevatorMotor2.move_velocity(-600);
+// 	pros::lcd::print(3, "Elevator Up");
+
+// } 
+// else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+// 	ElevatorMotor1.brake();
+// 	ElevatorMotor2.brake();
+//     ElevatorMotor1.move_velocity(-600);
+//     ElevatorMotor2.move_velocity(600);
+// 	pros::lcd::print(4, "Elevator Down");
+// } else {
+// 	 ElevatorMotor1.move_velocity(0);
+// 	 ElevatorMotor2.move_velocity(0);
+// 	 pros::lcd::print(5, "Elevator Still");
+// }
 
 
-// Roller claw
-		// // Scoring 
-		// if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-		// 	ScoringMotor.move_velocity(150);
-		// } 
-		// else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-		// 	ScoringMotor.move_velocity(-150);
-		// } 
-		// else {
-		// 	ScoringMotor.move_velocity(0);
-		// }
+// Motorized Claw
 
-// 		// Intake
-// 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-// 			IntakeMotor.move_velocity(200);
-// 		} 
-// 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-// 			IntakeMotor.move_velocity(-200);
-// 		} 
-// 		else {
-// 			IntakeMotor.move_velocity(0);
-// 		}
+
 
 // 	// Color sensor for blue case
 // 	double color = ColorSensor.get_hue();
