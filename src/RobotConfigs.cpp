@@ -1,12 +1,15 @@
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "pros/motors.hpp"
 #include "pros/optical.hpp"
+#include <cstddef>
 #include "robotConfigs.h"
 
 // // Motors/Sensors for functions
 pros::Motor ElevatorMotor1(14); //Change these ports to match your robot
 pros::Motor ElevatorMotor2(15); //Change these ports to match your robot
+pros::Motor ElevatorMotor3(19); //Change these ports to match your robot
 pros::Motor ScoringMotor1(9); //Change this port to match your robot
 // pros::Optical ColorSensor(27); //Change this port to match your robot
 // pros::Motor IntakeMotor(18); //Change this port to match your robot
@@ -32,9 +35,9 @@ lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 );
 
 // imu
-pros::Imu imu(10); 
+pros::Imu imu(3); 
 // vertical tracking wheel encoder (Rotation sensor) is reversed
-pros::Rotation vertical_encoder(2); 
+pros::Rotation vertical_encoder(-2); 
 // // horizontal tracking wheel encoder (Rotation sensor) is reversed
 
 pros::Rotation horizontal_encoder(6); 
@@ -49,15 +52,15 @@ lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
-lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              3, // derivative gain (kD)
-                                              0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
-                                              20 // maximum acceleration (slew)
+lemlib::ControllerSettings lateral_controller(15, // kP
+                                              0,   // kI
+                                              50,   // kD — set to 0 for now, we're isolating kP first
+                                              0,   // anti windup
+                                              0,   // small error range, inches
+                                              0, // small error range timeout, ms
+                                              0,   // large error range, inches
+                                              0, // large error range timeout, ms
+                                              0   // slew
 );
 lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
                                               0, // integral gain (kI)

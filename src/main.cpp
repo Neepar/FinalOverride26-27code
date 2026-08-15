@@ -78,11 +78,44 @@ void competition_initialize() {}
 
 
 void autonomous() {
-    chassis.setPose(0,0,0);
 	ScoringMotor1.move_velocity(600);
-	chassis.moveToPose(0, 10, 0, 9999);
-	chassis.turnToHeading(-90, 2000);
-	chassis.moveToPose(-20, 10, -90, 9999);
+    chassis.setPose(0,0,0);
+	chassis.moveToPoint(0, 8, 1000);
+	chassis.moveToPoint(0, -1, 1000, {.forwards = false, .maxSpeed = 600});
+	chassis.moveToPoint(0, 8, 1000);
+	chassis.moveToPoint(0, -1, 1000, {.forwards = false, .maxSpeed = 600});
+	chassis.moveToPoint(0, 15, 3000);
+	chassis.turnToHeading(-90, 1000, {.maxSpeed=100});
+	ElevatorMotor1.move_velocity(600);
+	ElevatorMotor2.move_velocity(-600);
+	ElevatorMotor3.move_velocity(-600);
+	pros::delay(700);
+	ElevatorMotor1.move_velocity(0);
+	ElevatorMotor2.move_velocity(0);
+	ElevatorMotor3.move_velocity(0);
+	chassis.moveToPoint(-20, 15, 3000, {.maxSpeed=100});
+	pros::delay(1500);
+	ElevatorMotor1.move_velocity(-600);
+	ElevatorMotor2.move_velocity(600);
+	ElevatorMotor3.move_velocity(600);
+	pros::delay(100);
+	ElevatorMotor1.move_velocity(0);
+	ElevatorMotor2.move_velocity(0);
+	ElevatorMotor3.move_velocity(0);
+	ScoringMotor1.move_velocity(-200);
+	pros::delay(1000);
+	ScoringMotor1.move_velocity(0);
+	// chassis.moveToPoint(0, 24, 3000);
+	// chassis.turnToHeading(90, 2000);
+	// chassis.moveToPoint(20, 24, 3000);
+	// ScoringMotor1.move_velocity(-600);
+	// chassis.moveToPoint(0, 24, 3000);
+	// chassis.turnToHeading(0, 2000);
+	// chassis.moveToPoint(-20, 0, 3000);
+	
+
+
+
 }
 //Real autonomous program template
 //Toggle shift
@@ -140,6 +173,7 @@ if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(600);
 	ElevatorMotor2.move_velocity(-600);
+	ElevatorMotor3.move_velocity(-600);
 	// pros::lcd::print(3, "Elevator Up");
 
 } 
@@ -148,10 +182,12 @@ else if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(-600);
 	ElevatorMotor2.move_velocity(600);
+	ElevatorMotor3.move_velocity(600);
 	// pros::lcd::print(4, "Elevator Down");
 } else {
 	 ElevatorMotor1.move_velocity(0);
 	 ElevatorMotor2.move_velocity(0);
+	 ElevatorMotor3.move_velocity(0);
 	//  pros::lcd::print(5, "Elevator Still");
 }
 // if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {

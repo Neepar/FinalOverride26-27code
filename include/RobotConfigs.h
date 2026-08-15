@@ -9,6 +9,7 @@
 // Motors for Functions
 extern pros::Motor ElevatorMotor1;
 extern pros::Motor ElevatorMotor2;
+extern pros::Motor ElevatorMotor3;
 extern pros::Motor ScoringMotor1;
 // extern pros::Motor IntakeMotor;
 // extern pros::Optical ColorSensor;
@@ -20,7 +21,9 @@ extern pros::Controller partner;
 extern pros::MotorGroup leftMotors;
 extern pros::MotorGroup rightMotors;
 extern lemlib::Chassis chassis;
-extern pros::Rotation vertical_encoder;
-extern pros::Rotation horizontal_encoder;
+// extern pros::Rotation vertical_encoder;
+// extern lemlib::TrackingWheel vertical_tracking_wheel;
+// extern lemlib::TrackingWheel horizontal_tracking_wheel;
+// extern pros::Rotation horizontal_encoder;
 extern pros::Imu imu;
 #endif // PROS_ROBOT_CONFIG_H_
