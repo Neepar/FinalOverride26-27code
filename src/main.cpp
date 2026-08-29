@@ -8,7 +8,7 @@
 #include "pros/rtos.hpp"
 #include "robotConfigs.h"
 
-double maximumtime = 1.5; // Variable to track elapsed time
+// Variable to track elapsed time
 // Functions with Button
 /**
  * A callback function for LLEMU's center button.
@@ -81,37 +81,42 @@ void autonomous() {
 	ScoringMotor1.move_velocity(600);
     chassis.setPose(0,0,0);
 	chassis.moveToPoint(0, 8, 1000);
-	chassis.moveToPoint(0, -1, 1000, {.forwards = false, .maxSpeed = 600});
+	chassis.moveToPoint(0, -2, 1000, {.forwards = false, .maxSpeed = 600});
 	chassis.moveToPoint(0, 8, 1000);
-	chassis.moveToPoint(0, -1, 1000, {.forwards = false, .maxSpeed = 600});
-	chassis.moveToPoint(0, 15, 3000);
-	chassis.turnToHeading(-90, 1000, {.maxSpeed=100});
+	chassis.moveToPoint(0, -2, 1000, {.forwards = false, .maxSpeed = 600});
+	// Toggle
+	chassis.moveToPoint(0, 18.5, 3000);
+	chassis.turnToHeading(90, 1000, {.maxSpeed=100});
+	// Forward and turn
 	ElevatorMotor1.move_velocity(600);
 	ElevatorMotor2.move_velocity(-600);
-	ElevatorMotor3.move_velocity(-600);
-	pros::delay(700);
+	ElevatorMotor3.move_velocity(-450);
+	pros::delay(1000);
 	ElevatorMotor1.move_velocity(0);
 	ElevatorMotor2.move_velocity(0);
 	ElevatorMotor3.move_velocity(0);
-	chassis.moveToPoint(-20, 15, 3000, {.maxSpeed=100});
-	pros::delay(1500);
+	
+	// Elevator Movement
+	chassis.moveToPoint(19.5, 18.5, 1500, {.maxSpeed=50});
+	// ElevatorMotor1.move_velocity(-600);
+	// ElevatorMotor2.move_velocity(600); 
+	// ElevatorMotor3.move_velocity(600);
+	pros::delay(2000);
 	ElevatorMotor1.move_velocity(-600);
 	ElevatorMotor2.move_velocity(600);
 	ElevatorMotor3.move_velocity(600);
-	pros::delay(100);
+	pros::delay(300);
 	ElevatorMotor1.move_velocity(0);
 	ElevatorMotor2.move_velocity(0);
 	ElevatorMotor3.move_velocity(0);
-	ScoringMotor1.move_velocity(-200);
 	pros::delay(1000);
-	ScoringMotor1.move_velocity(0);
-	// chassis.moveToPoint(0, 24, 3000);
-	// chassis.turnToHeading(90, 2000);
-	// chassis.moveToPoint(20, 24, 3000);
-	// ScoringMotor1.move_velocity(-600);
-	// chassis.moveToPoint(0, 24, 3000);
-	// chassis.turnToHeading(0, 2000);
-	// chassis.moveToPoint(-20, 0, 3000);
+	// ElevatorMotor1.move_velocity(-600);
+	// ElevatorMotor2.move_velocity(600);
+	// ElevatorMotor3.move(450);
+	// ElevatorMotor1.move_velocity(0);
+	// ElevatorMotor2.move_velocity(0);
+	// ElevatorMotor3.move_velocity(0);
+	ScoringMotor1.move_velocity(-200);
 	
 
 
@@ -157,10 +162,10 @@ void opcontrol() {
 		master.print(0, 0, "Hold Mode: %s", HoldFunction ? "ON" : "OFF");
 
 	// Motorized Claw control
-	if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+	if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 	ScoringMotor1.move_velocity(600);
 	}
-	else if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+	else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 		ScoringMotor1.move_velocity(-600);
 	}
 	else {
@@ -168,7 +173,7 @@ void opcontrol() {
 	}
 		// Elevator Control
 
-if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	ElevatorMotor1.brake();
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(600);
@@ -177,7 +182,7 @@ if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	// pros::lcd::print(3, "Elevator Up");
 
 } 
-else if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 	ElevatorMotor1.brake();
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(-600);

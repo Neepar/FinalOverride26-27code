@@ -9,7 +9,7 @@
 // // Motors/Sensors for functions
 pros::Motor ElevatorMotor1(14); //Change these ports to match your robot
 pros::Motor ElevatorMotor2(15); //Change these ports to match your robot
-pros::Motor ElevatorMotor3(19); //Change these ports to match your robot
+pros::Motor ElevatorMotor3(8); //Change these ports to match your robot
 pros::Motor ScoringMotor1(9); //Change this port to match your robot
 // pros::Optical ColorSensor(27); //Change this port to match your robot
 // pros::Motor IntakeMotor(18); //Change this port to match your robot
@@ -17,7 +17,7 @@ pros::Motor ScoringMotor1(9); //Change this port to match your robot
 
 //Controllers for robot
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
-pros::Controller partner(pros::E_CONTROLLER_PARTNER);
+// pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 
 pros::MotorGroup leftMotors({-5, -18}, pros::MotorGearset::blue); // left motor group - ports 3 (reversed), 4, 5 (reversed)
 pros::MotorGroup rightMotors({1, 11}, pros::MotorGearset::blue); // right motor group - ports 6, 7, 9 (reversed)
