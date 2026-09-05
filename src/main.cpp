@@ -78,49 +78,8 @@ void competition_initialize() {}
 
 
 void autonomous() {
-	ScoringMotor1.move_velocity(600);
-    chassis.setPose(0,0,0);
-	chassis.moveToPoint(0, 8, 1000);
-	chassis.moveToPoint(0, -2, 1000, {.forwards = false, .maxSpeed = 600});
-	chassis.moveToPoint(0, 8, 1000);
-	chassis.moveToPoint(0, -2, 1000, {.forwards = false, .maxSpeed = 600});
-	// Toggle
-	chassis.moveToPoint(0, 18.5, 3000);
-	chassis.turnToHeading(90, 1000, {.maxSpeed=100});
-	// Forward and turn
-	ElevatorMotor1.move_velocity(600);
-	ElevatorMotor2.move_velocity(-600);
-	ElevatorMotor3.move_velocity(-450);
-	pros::delay(1000);
-	ElevatorMotor1.move_velocity(0);
-	ElevatorMotor2.move_velocity(0);
-	ElevatorMotor3.move_velocity(0);
-	
-	// Elevator Movement
-	chassis.moveToPoint(19.5, 18.5, 1500, {.maxSpeed=50});
-	// ElevatorMotor1.move_velocity(-600);
-	// ElevatorMotor2.move_velocity(600); 
-	// ElevatorMotor3.move_velocity(600);
-	pros::delay(2000);
-	ElevatorMotor1.move_velocity(-600);
-	ElevatorMotor2.move_velocity(600);
-	ElevatorMotor3.move_velocity(600);
-	pros::delay(300);
-	ElevatorMotor1.move_velocity(0);
-	ElevatorMotor2.move_velocity(0);
-	ElevatorMotor3.move_velocity(0);
-	pros::delay(1000);
-	// ElevatorMotor1.move_velocity(-600);
-	// ElevatorMotor2.move_velocity(600);
-	// ElevatorMotor3.move(450);
-	// ElevatorMotor1.move_velocity(0);
-	// ElevatorMotor2.move_velocity(0);
-	// ElevatorMotor3.move_velocity(0);
-	ScoringMotor1.move_velocity(-200);
-	
-
-
-
+	chassis.setPose(0,0,0);
+	chassis.moveToPose(0, 30, 0, 9999);
 }
 //Real autonomous program template
 //Toggle shift

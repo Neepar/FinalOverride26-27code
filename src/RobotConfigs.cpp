@@ -28,7 +28,7 @@ pros::MotorGroup rightMotors({1, 11}, pros::MotorGearset::blue); // right motor 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
-                              11.3, // 11.3 inch track width
+                              11.25, // 11.25 inch track width
                               lemlib::Omniwheel::NEW_275, // using new 2.75" omnis
                               600, // drivetrain rpm is 600
                               2 // horizontal drift is 2 (for now)
@@ -37,14 +37,14 @@ lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 // imu
 pros::Imu imu(3); 
 // vertical tracking wheel encoder (Rotation sensor) is reversed
-pros::Rotation vertical_encoder(-2); 
+pros::Rotation vertical_encoder(2); 
 // // horizontal tracking wheel encoder (Rotation sensor) is reversed
 
-pros::Rotation horizontal_encoder(6); 
+pros::Rotation horizontal_encoder(-6); 
 // // vertical tracking wheel
-lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 0.925); 
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, -0.375); 
 // horizontal tracking wheel
-lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 1.45);      
+lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 3.525);      
 // odometry settings
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
@@ -54,7 +54,7 @@ lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel
 );
 lemlib::ControllerSettings lateral_controller(15, // kP
                                               0,   // kI
-                                              50,   // kD — set to 0 for now, we're isolating kP first
+                                              3,   // kD — set to 0 for now, we're isolating kP first
                                               0,   // anti windup
                                               0,   // small error range, inches
                                               0, // small error range timeout, ms
