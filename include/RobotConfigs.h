@@ -4,6 +4,8 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 #include "pros/adi.h"
+#include "pros/distance.hpp"
+#include "pros/imu.hpp"
 #include "pros/optical.hpp"
 
 // Motors for Functions
@@ -16,14 +18,18 @@ extern pros::Motor ScoringMotor1;
 extern pros::Controller master;
 // extern pros::Controller partner;
 
+// Sensors
+
 
 //Drivetrain stuff
 extern pros::MotorGroup leftMotors;
 extern pros::MotorGroup rightMotors;
 extern lemlib::Chassis chassis;
-// extern pros::Rotation vertical_encoder;
+extern pros::Rotation vertical_encoder;
 // extern lemlib::TrackingWheel vertical_tracking_wheel;
 // extern lemlib::TrackingWheel horizontal_tracking_wheel;
-// extern pros::Rotation horizontal_encoder;
+extern pros::Rotation horizontal_encoder;
 extern pros::Imu imu;
+extern pros::Distance YDistSensor;
+extern pros::Distance XDistSensor;
 #endif // PROS_ROBOT_CONFIG_H_

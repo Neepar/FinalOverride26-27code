@@ -75,12 +75,31 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-
+void arctanfunction (double targetX, double targetY) {
+	lemlib::Pose currentPose = chassis.getPose();
+    double deltaX = targetX - currentPose.x;
+    double deltaY = targetY - currentPose.y;
+    double angleToGoal = atan2(deltaX, deltaY) * (180.0 / M_PI);
+    pros::lcd::print(0, "Angle to goal: %.2f", angleToGoal);
+    pros::delay(3000); 
+    
+    chassis.turnToHeading(angleToGoal, 1000);
+    chassis.moveToPoint(targetX, targetY, 3000);
+}
 
 void autonomous() {
 	chassis.setPose(0,0,0);
-	chassis.moveToPose(0, 30, 0, 9999);
+// while (true) {
+//     lemlib::Pose pose = chassis.getPose();
+//     pros::lcd::print(3, "X: %.2f Y: %.2f Th: %.2f", pose.x, pose.y, pose.theta);
+//     pros::lcd::print(0, "XDistance: %ld", XDistSensor.get_distance());
+//     pros::lcd::print(1, "YDistance: %ld", YDistSensor.get_distance());
+//     pros::delay(50); // Keeps the loop from locking up the brain
+// }
+chassis.turnToHeading(180, 999999);
+
 }
+
 //Real autonomous program template
 //Toggle shift
 //Manually measure some of these distances btw
