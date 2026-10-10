@@ -5,6 +5,7 @@
 #include "pros/abstract_motor.hpp"
 #include "pros/llemu.hpp"
 #include "pros/misc.h"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "robotConfigs.h"
 
@@ -35,13 +36,12 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	chassis.calibrate(); // this handles IMU calibration/reset internally
-	// ColorSensor.set_led_pwm(80); //Change if you want
-	
+	ClawPneumatic.set_value(false); // Set pneumatic to default state (closed)
 	while (imu.is_calibrating()) {
 		pros::delay(10);
 	}
 	
-	pros::lcd::print(3, "IMU Ready!");
+	
 	// ElevatorMotor1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	// ElevatorMotor2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	// pros::lcd::print(4, "Brake mode hold");
@@ -82,21 +82,91 @@ void arctanfunction (double targetX, double targetY) {
     double angleToGoal = atan2(deltaX, deltaY) * (180.0 / M_PI);
     pros::lcd::print(0, "Angle to goal: %.2f", angleToGoal);
     pros::delay(3000); 
-    
-    chassis.turnToHeading(angleToGoal, 1000);
-    chassis.moveToPoint(targetX, targetY, 3000);
 }
 
 void autonomous() {
-	chassis.setPose(0,0,0);
-// while (true) {
-//     lemlib::Pose pose = chassis.getPose();
-//     pros::lcd::print(3, "X: %.2f Y: %.2f Th: %.2f", pose.x, pose.y, pose.theta);
-//     pros::lcd::print(0, "XDistance: %ld", XDistSensor.get_distance());
-//     pros::lcd::print(1, "YDistance: %ld", YDistSensor.get_distance());
-//     pros::delay(50); // Keeps the loop from locking up the brain
-// }
-chassis.turnToHeading(180, 999999);
+chassis.setPose(0,0,0);
+ScoringMotor1.move_velocity(20);
+// Toggle Begin
+chassis.moveToPoint(0, 8, 800, {.maxSpeed = 200});
+chassis.moveToPoint(0, -8, 800, {.forwards = false, .maxSpeed = 600});
+chassis.moveToPoint(0, 8, 800, {.maxSpeed = 200});
+chassis.moveToPoint(0, -8, 800, {.forwards = false, .maxSpeed = 600});
+// Toggle End
+chassis.waitUntilDone();
+chassis.setPose(0,0,0);
+// Forward Begin
+chassis.moveToPoint(0, 17, 800, {.maxSpeed = 100}); //Was 13 before
+// Forward End
+chassis.waitUntilDone();
+// Turn Left Begin
+chassis.turnToHeading(90, 1000, {.maxSpeed = 100});
+// Turn Left End
+chassis.waitUntilDone();
+chassis.setPose(0,0,0);
+ClawPneumatic.set_value(true);
+// Forward Begin
+pros::delay(200);
+chassis.moveToPoint(0, 19, 800, {.maxSpeed = 100});
+// Forward End
+chassis.waitUntilDone();
+// Pin Drop Begin
+ScoringMotor1.move_velocity(-600);
+pros::delay(800);
+ScoringMotor1.move_velocity(0);
+chassis.cancelAllMotions();
+// Pin Drop End
+// chassis.waitUntilDone();
+// // Elevator Begin
+// ElevatorMotor1.move_velocity(-200);
+// ElevatorMotor2.move_velocity(200);
+// // Elevator End
+// pros::delay(200);
+// // Move Backard Begin
+// chassis.moveToPoint(0, 0, 800, {.forwards=false, .maxSpeed = 100});
+// // Move Backward End
+// chassis.waitUntilDone();
+// ElevatorMotor1.move_velocity(0);
+// ElevatorMotor2.move_velocity(0);
+// // // Turn Right Begin
+// chassis.turnToHeading(44, 1000, {.maxSpeed = 100});
+// // Turn Right End
+// chassis.waitUntilDone();
+// chassis.setPose(0,0,0);
+// // Move Forward (Towards the Cup)
+// chassis.moveToPoint(0, 25, 999999, {.maxSpeed = 100}); //Original was 17.5
+// // Move Forward (Towards the Cup) Finish
+// chassis.waitUntilDone();
+// // Pin and Cup Pick up Begin
+// ScoringMotor1.move_velocity(600);
+// ElevatorMotor1.move_velocity(400);
+// ElevatorMotor2.move_velocity(-400);
+// pros::delay(2000);
+// // Pin and Cup Pick up End
+// //Elevator Up Start
+// ElevatorMotor1.move_relative(-2160, 100);
+// ElevatorMotor2.move_relative(2160, 100);
+// //Elevator Up Finish
+// //Turn begin
+// pros::delay(1400);
+// // ScoringMotor1.move_velocity(600);
+// chassis.turnToHeading(-117.5, 1200, {.maxSpeed = 100});
+// // Turn End
+// // Reset Position
+// chassis.waitUntilDone();
+// chassis.setPose(0,0,0);
+// // Reset Position End
+// // Drive Forward Begin
+// chassis.moveToPoint(0, 12, 999999, {.maxSpeed = 100});//Was 10 before
+// chassis.waitUntilDone();
+// // Drive Forward End
+// // Drop Pin Begin
+//  ScoringMotor1.move_velocity(-600);
+// // Drop Pin End
+// pros::delay(800);
+// ScoringMotor1.move_velocity(0);
+// ElevatorMotor1.move_velocity(-200);
+// ElevatorMotor2.move_velocity(200);
 
 }
 
@@ -113,13 +183,31 @@ chassis.turnToHeading(180, 999999);
 	// 8. Score yellow pin 
 	// Total score: 15 points + 12 point bonus = 27 points
 	
+//auton 2
+// chassis.setPose(0,0,0);
+// chassis.moveToPoint(0, 13, 800, {.maxSpeed = 200});
+// chassis.moveToPoint(0, -5, 800, {.forwards = false, .maxSpeed = 600});
+// chassis.moveToPoint(0, 13, 800, {.maxSpeed = 200});
+// chassis.moveToPoint(0, -5, 800, {.forwards = false, .maxSpeed = 600});
+// // Toggle
+// chassis.waitUntilDone();
+// chassis.setPose(0,0,0);
+// chassis.moveToPoint(0, 13.5, 800, {.maxSpeed = 200}); //was 15 before
+// chassis.waitUntilDone();
+// chassis.turnToHeading(-90, 1000, {.maxSpeed = 200});//Replace with chassis.turntoPoint
+// chassis.waitUntilDone();
+// chassis.setPose(0,0,0);
+// chassis.moveToPoint(0, 16.5, 800, {.maxSpeed = 200});
+// chassis.waitUntilDone();
+// ScoringMotor1.move_velocity(-600);
+// pros::delay(500);
+// ScoringMotor1.move_velocity(0);
 
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	bool HoldFunction = false;
-	bool ElevatorResist = false;
-	bool WasL1pressed = false;
-	bool clawOpen=false;
+	bool Pneumatic = false;
+
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
@@ -140,23 +228,29 @@ void opcontrol() {
 		master.print(0, 0, "Hold Mode: %s", HoldFunction ? "ON" : "OFF");
 
 	// Motorized Claw control
-	if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+	if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 	ScoringMotor1.move_velocity(600);
+	IntakeMotor.move_velocity(600);
+	IntakeMotor2.move_velocity(-600);
 	}
-	else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+	else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 		ScoringMotor1.move_velocity(-600);
+		IntakeMotor.move_velocity(-600);
+		IntakeMotor2.move_velocity(600);
 	}
 	else {
 		ScoringMotor1.move_velocity(0);
+		IntakeMotor.move_velocity(0);
+		IntakeMotor2.move_velocity(0);
 	}
-		// Elevator Control
+// Elevator Control
 
 if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	ElevatorMotor1.brake();
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(600);
 	ElevatorMotor2.move_velocity(-600);
-	ElevatorMotor3.move_velocity(-600);
+	// ElevatorMotor3.move_velocity(-600);
 	// pros::lcd::print(3, "Elevator Up");
 
 } 
@@ -165,38 +259,21 @@ else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 	ElevatorMotor2.brake();
 	ElevatorMotor1.move_velocity(-600);
 	ElevatorMotor2.move_velocity(600);
-	ElevatorMotor3.move_velocity(600);
+	// ElevatorMotor3.move_velocity(600);
 	// pros::lcd::print(4, "Elevator Down");
 } else {
 	 ElevatorMotor1.move_velocity(0);
 	 ElevatorMotor2.move_velocity(0);
-	 ElevatorMotor3.move_velocity(0);
+	//  ElevatorMotor3.move_velocity(0);
 	//  pros::lcd::print(5, "Elevator Still");
 }
-// if (partner.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-// 	ElevatorMotor1.brake();
-// 	ElevatorMotor2.brake();
-//     ElevatorMotor1.move_velocity(600);
-//     ElevatorMotor2.move_velocity(-600);
-// 	pros::lcd::print(3, "Elevator Up");
-
-// } 
-// else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-// 	ElevatorMotor1.brake();
-// 	ElevatorMotor2.brake();
-//     ElevatorMotor1.move_velocity(-600);
-//     ElevatorMotor2.move_velocity(600);
-// 	pros::lcd::print(4, "Elevator Down");
-// } else {
-// 	 ElevatorMotor1.move_velocity(0);
-// 	 ElevatorMotor2.move_velocity(0);
-// 	 pros::lcd::print(5, "Elevator Still");
-// }
 
 
-// Motorized Claw
-
-
+// Pneumatic
+if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {  // If X is pressed, toggle Pneumatic
+	Pneumatic = !Pneumatic;
+	ClawPneumatic.set_value(Pneumatic);
+}
 
 // 	// Color sensor for blue case
 // 	double color = ColorSensor.get_hue();

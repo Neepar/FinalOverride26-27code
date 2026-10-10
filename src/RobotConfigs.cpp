@@ -8,23 +8,21 @@
 #include "robotConfigs.h"
 
 // // Motors/Sensors for functions
-pros::Motor ElevatorMotor1(14); //Change these ports to match your robot
-pros::Motor ElevatorMotor2(15); //Change these ports to match your robot
-pros::Motor ElevatorMotor3(8); //Change these ports to match your robot
-pros::Motor ScoringMotor1(9); //Change this port to match your robot
-// pros::Optical ColorSensor(27); //Change this port to match your robot
-// pros::Motor IntakeMotor(18); //Change this port to match your robot
+pros::Motor ElevatorMotor1(9); //Change these ports to match your robot
+pros::Motor ElevatorMotor2(1); //Change these ports to match your robot
+pros::Motor ScoringMotor1(10); //Change this port to match your robot
+pros::Motor IntakeMotor(5);
+pros::Motor IntakeMotor2(2);
 
-
+// Pneumatic
+pros::adi::DigitalOut ClawPneumatic('A'); //Change this port to match your robot
 //Controllers for robot
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 
-pros::MotorGroup leftMotors({-5, -18}, pros::MotorGearset::blue); // left motor group - ports 3 (reversed), 4, 5 (reversed)
-pros::MotorGroup rightMotors({1, 11}, pros::MotorGearset::blue); // right motor group - ports 6, 7, 9 (reversed)
+pros::MotorGroup leftMotors({-18, -17}, pros::MotorGearset::blue); // left motor group - ports 3 (reversed), 4, 5 (reversed)
+pros::MotorGroup rightMotors({20, 19}, pros::MotorGearset::blue); // right motor group - ports 6, 7, 9 (reversed)
 
-// pros::MotorGroup leftMotors({15, -17, 19}, pros::MotorGearset::blue); // left motor group - ports 3 (reversed), 4, 5 (reversed)
-// pros::MotorGroup rightMotors({14, -16, -20}, pros::MotorGearset::blue); // right motor group - ports 6, 7, 9 (reversed)
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
@@ -38,7 +36,7 @@ lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 // imu
 pros::Imu imu(3); 
 // vertical tracking wheel encoder (Rotation sensor) is reversed
-pros::Rotation vertical_encoder(2); 
+pros::Rotation vertical_encoder(16); 
 // // horizontal tracking wheel encoder (Rotation sensor) is reversed
 pros::Rotation horizontal_encoder(-6); 
 // // vertical tracking wheel
@@ -46,8 +44,8 @@ lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwhe
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 3.525);  
 // Distance sensors
-pros::Distance XDistSensor(16); // Change this port to match your robot
-pros::Distance YDistSensor(4); // Change this port to match your robot
+// pros::Distance XDistSensor(16); // Change this port to match your robot
+// pros::Distance YDistSensor(4); // Change this port to match your robot
 // odometry settings
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs

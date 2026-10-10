@@ -13,13 +13,14 @@ extern pros::Motor ElevatorMotor1;
 extern pros::Motor ElevatorMotor2;
 extern pros::Motor ElevatorMotor3;
 extern pros::Motor ScoringMotor1;
-// extern pros::Motor IntakeMotor;
+extern pros::Motor IntakeMotor;
+extern pros::Motor IntakeMotor2;
 // extern pros::Optical ColorSensor;
 extern pros::Controller master;
 // extern pros::Controller partner;
 
-// Sensors
-
+//Pneumatics
+extern pros::adi::DigitalOut ClawPneumatic;
 
 //Drivetrain stuff
 extern pros::MotorGroup leftMotors;
