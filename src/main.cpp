@@ -85,89 +85,18 @@ void arctanfunction (double targetX, double targetY) {
 }
 
 void autonomous() {
-chassis.setPose(0,0,0);
-ScoringMotor1.move_velocity(20);
-// Toggle Begin
-chassis.moveToPoint(0, 8, 800, {.maxSpeed = 200});
-chassis.moveToPoint(0, -8, 800, {.forwards = false, .maxSpeed = 600});
-chassis.moveToPoint(0, 8, 800, {.maxSpeed = 200});
-chassis.moveToPoint(0, -8, 800, {.forwards = false, .maxSpeed = 600});
-// Toggle End
-chassis.waitUntilDone();
-chassis.setPose(0,0,0);
-// Forward Begin
-chassis.moveToPoint(0, 17, 800, {.maxSpeed = 100}); //Was 13 before
-// Forward End
-chassis.waitUntilDone();
-// Turn Left Begin
-chassis.turnToHeading(90, 1000, {.maxSpeed = 100});
-// Turn Left End
-chassis.waitUntilDone();
-chassis.setPose(0,0,0);
-ClawPneumatic.set_value(true);
-// Forward Begin
-pros::delay(200);
-chassis.moveToPoint(0, 19, 800, {.maxSpeed = 100});
-// Forward End
-chassis.waitUntilDone();
-// Pin Drop Begin
-ScoringMotor1.move_velocity(-600);
-pros::delay(800);
-ScoringMotor1.move_velocity(0);
-chassis.cancelAllMotions();
-// Pin Drop End
-// chassis.waitUntilDone();
-// // Elevator Begin
-// ElevatorMotor1.move_velocity(-200);
-// ElevatorMotor2.move_velocity(200);
-// // Elevator End
-// pros::delay(200);
-// // Move Backard Begin
-// chassis.moveToPoint(0, 0, 800, {.forwards=false, .maxSpeed = 100});
-// // Move Backward End
-// chassis.waitUntilDone();
-// ElevatorMotor1.move_velocity(0);
-// ElevatorMotor2.move_velocity(0);
-// // // Turn Right Begin
-// chassis.turnToHeading(44, 1000, {.maxSpeed = 100});
-// // Turn Right End
-// chassis.waitUntilDone();
-// chassis.setPose(0,0,0);
-// // Move Forward (Towards the Cup)
-// chassis.moveToPoint(0, 25, 999999, {.maxSpeed = 100}); //Original was 17.5
-// // Move Forward (Towards the Cup) Finish
-// chassis.waitUntilDone();
-// // Pin and Cup Pick up Begin
-// ScoringMotor1.move_velocity(600);
-// ElevatorMotor1.move_velocity(400);
-// ElevatorMotor2.move_velocity(-400);
-// pros::delay(2000);
-// // Pin and Cup Pick up End
-// //Elevator Up Start
-// ElevatorMotor1.move_relative(-2160, 100);
-// ElevatorMotor2.move_relative(2160, 100);
-// //Elevator Up Finish
-// //Turn begin
-// pros::delay(1400);
-// // ScoringMotor1.move_velocity(600);
-// chassis.turnToHeading(-117.5, 1200, {.maxSpeed = 100});
-// // Turn End
-// // Reset Position
-// chassis.waitUntilDone();
-// chassis.setPose(0,0,0);
-// // Reset Position End
-// // Drive Forward Begin
-// chassis.moveToPoint(0, 12, 999999, {.maxSpeed = 100});//Was 10 before
-// chassis.waitUntilDone();
-// // Drive Forward End
-// // Drop Pin Begin
-//  ScoringMotor1.move_velocity(-600);
-// // Drop Pin End
-// pros::delay(800);
-// ScoringMotor1.move_velocity(0);
-// ElevatorMotor1.move_velocity(-200);
-// ElevatorMotor2.move_velocity(200);
-
+firstPose();
+moveForward(8, 1000, 200);
+moveHome();
+moveForward(8, 1000, 200);
+moveHome();
+resetPose();
+moveForward(16, 1000, 200);
+turnLeft(90, 1000, 200);
+resetPose();
+moveForward(20, 1000, 200);
+clawUp();
+scorePin();
 }
 
 //Real autonomous program template
@@ -251,8 +180,7 @@ if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	ElevatorMotor1.move_velocity(600);
 	ElevatorMotor2.move_velocity(-600);
 	// ElevatorMotor3.move_velocity(-600);
-	// pros::lcd::print(3, "Elevator Up");
-
+//Down
 } 
 else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 	ElevatorMotor1.brake();
@@ -301,4 +229,72 @@ if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {  // If X is pr
 	
 		pros::delay(20);
 	}
+}
+
+// Simplified Functions
+void moveForward(float y, int timeout, float maxSpeed) {
+	chassis.moveToPoint(0, y, timeout, {.maxSpeed = maxSpeed});
+}
+
+void moveBackward(float y, int timeout, float maxSpeed) {
+	chassis.moveToPoint(0, -y, timeout, {.forwards = false, .maxSpeed = maxSpeed});
+}
+void resetPose() {
+	chassis.waitUntilDone();
+	chassis.setPose(0,0,0);
+}
+void turnLeft(float angle, int timeout, int maxSpeed) {
+	chassis.turnToHeading(-angle, timeout, {.maxSpeed = maxSpeed});
+}
+void turnRight(float angle, int timeout, int maxSpeed) {
+	chassis.turnToHeading(angle, timeout, {.maxSpeed = maxSpeed});
+}
+void moveHome() {
+	chassis.moveToPoint(0, 0, 800, {.forwards = false, .maxSpeed = 200});
+	chassis.waitUntilDone();
+}
+void firstPose() {
+	chassis.setPose(0,0,0);
+}
+void scorePin() {
+	ScoringMotor1.move_velocity(-600);
+	pros::delay(500);
+	ScoringMotor1.move_velocity(0);
+}
+void pickupPin() {
+	ElevatorMotor1.move_velocity(600);
+	ElevatorMotor2.move_velocity(-600);
+	ScoringMotor1.move_velocity(600);
+	pros::delay(1000);
+	ElevatorMotor1.move_velocity(0);
+	ElevatorMotor2.move_velocity(0);
+	ScoringMotor1.move_velocity(600);
+}
+void elevatorUp(float time) {
+	ElevatorMotor1.move_velocity(-600);
+	ElevatorMotor2.move_velocity(600);
+	pros::delay(time);
+	ElevatorMotor1.move_velocity(0);
+	ElevatorMotor2.move_velocity(0);
+}
+
+void elevatorDown(float time) {
+	ElevatorMotor1.move_velocity(600);
+	ElevatorMotor2.move_velocity(-600);
+	pros::delay(time);
+	ElevatorMotor1.move_velocity(0);
+	ElevatorMotor2.move_velocity(0);
+}
+void clawUp() {
+	ClawPneumatic.set_value(true);
+}
+void clawDown() {
+	ClawPneumatic.set_value(false);
+}
+void hardStop() {
+	chassis.cancelAllMotions();
+    ElevatorMotor1.move_velocity(0);
+    ElevatorMotor2.move_velocity(0);
+    ScoringMotor1.move_velocity(0);
+
 }

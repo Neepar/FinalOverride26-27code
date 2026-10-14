@@ -5,7 +5,7 @@
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
 #include <cstddef>
-#include "robotConfigs.h"
+#include "RobotConfigs.h"
 
 // // Motors/Sensors for functions
 pros::Motor ElevatorMotor1(9); //Change these ports to match your robot

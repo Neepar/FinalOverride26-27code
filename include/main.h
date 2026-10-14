@@ -66,6 +66,22 @@ void initialize(void);
 void disabled(void);
 void competition_initialize(void);
 void opcontrol(void);
+
+//Movement functions
+void moveForward(float y, int timeout, float maxSpeed);
+void moveBackward(float y, int timeout, float maxSpeed);
+void resetPose();
+void turnLeft(float angle, int timeout, int maxSpeed);
+void turnRight(float angle, int timeout, int maxSpeed);
+void moveHome();
+void firstPose();
+void scorePin();
+void pickupPin();
+void elevatorUp(float time);
+void elevatorDown(float time);
+void clawUp();
+void clawDown();
+void hardStop();
 #ifdef __cplusplus
 }
 #endif
