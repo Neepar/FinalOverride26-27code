@@ -11,8 +11,8 @@
 pros::Motor ElevatorMotor1(9); //Change these ports to match your robot
 pros::Motor ElevatorMotor2(1); //Change these ports to match your robot
 pros::Motor ScoringMotor1(10); //Change this port to match your robot
-pros::Motor IntakeMotor(5);
-pros::Motor IntakeMotor2(2);
+// pros::Motor ToggleMotor(12);
+
 
 // Pneumatic
 pros::adi::DigitalOut ClawPneumatic('A'); //Change this port to match your robot
@@ -27,7 +27,7 @@ pros::MotorGroup rightMotors({20, 19}, pros::MotorGearset::blue); // right motor
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
-                              11.25, // 11.25 inch track width
+                              11.3, // 11.3 inch track width
                               lemlib::Omniwheel::NEW_275, // using new 2.75" omnis
                               600, // drivetrain rpm is 600
                               8 // horizontal drift is 8 (for now)
@@ -44,8 +44,10 @@ lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwhe
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 3.525);  
 // Distance sensors
-// pros::Distance XDistSensor(16); // Change this port to match your robot
-// pros::Distance YDistSensor(4); // Change this port to match your robot
+pros::Distance LeftDistSensor(5); // Change this port to match your robot
+pros::Distance BackDistSensor(4); // Change this port to match your robot
+// Sensors
+pros::adi::DigitalIn bumper_switch('B'); // Change this port to match your robot
 // odometry settings
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs

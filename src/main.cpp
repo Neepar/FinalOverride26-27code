@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "RobotConfigs.h"
 #include "lemlib/api.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "pros/abstract_motor.hpp"
@@ -26,6 +27,12 @@ void on_center_button() {
 		pros::lcd::clear_line(2);
 	}
 }
+
+float LEFT_WALL_X=0;
+float BACK_WALL_Y=0;
+
+float BACK_DISTANCE_SENSOR_OFFSET = 5.46;
+float LEFT_DISTANCE_SENSOR_OFFSET = 3.7;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -85,19 +92,79 @@ void arctanfunction (double targetX, double targetY) {
 }
 
 void autonomous() {
-firstPose();
-moveForward(8, 1000, 200);
-moveHome();
-moveForward(8, 1000, 200);
-moveHome();
-resetPose();
-moveForward(16, 1000, 200);
-turnLeft(90, 1000, 200);
-resetPose();
-moveForward(20, 1000, 200);
-clawUp();
-scorePin();
+resetPoseNoWait();
+chassis.moveToPose(-15, 14, -90, 2000, {.lead = 0.5});
+chassis.waitUntilDone();
+scorePin(600, 1000);
+elevatorUp(300, 500);
+chassis.moveToPose(1.2, 14, -90, 2000, {.forwards=false});
+pros::delay(1000);
+chassis.moveToPose(-20, 25, -30, 2000, {.lead=0.02, .maxSpeed=60}); //Was 25 before
+chassis.waitUntilDone();
+pickupPin(600, 600, 1500);
+elevatorUp(600, 700);
+chassis.turnToPoint(-24.85, 24.98, 800);
+chassis.moveToPoint(-24.8, 21.5, 2000, {.maxSpeed=60});
+chassis.waitUntilDone();
+scorePin(600, 1000);
+elevatorUp(100, 500);
+chassis.moveToPoint(-20, 40, 2000, {.forwards=false});
+chassis.moveToPose(-40.93, 18.5, -132.08, 2000, {.lead=0.25, .maxSpeed=60});
+chassis.waitUntilDone();
+pickupPin(600, 600, 1200);
+elevatorUp(600, 110);
+chassis.moveToPose(-30, 18.5, 35, 2000, {.lead=0.6,.maxSpeed=60});
+chassis.waitUntilDone();
+scorePin(600, 1000);
+
+
+
+while (true) {
+lemlib::Pose pose = chassis.getPose();
+    pros::lcd::print(0, "X: %.2f", pose.x);
+    pros::lcd::print(1, "Y: %.2f", pose.y);
+    pros::lcd::print(2, "Theta: %.2f", pose.theta);
+	pros::delay(20);
 }
+
+}
+
+void DistanceSensorTracking() {
+	// Get current pose from Lemlib
+    lemlib::Pose current_pose = chassis.getPose();
+    double current_heading = current_pose.theta;
+
+    if (std::fabs(current_heading) < 2.0 || std::fabs(current_heading - 360.0) < 2.0) {
+        
+        // PROS distance sensors return millimeters. Divide by 25.4 to convert to inches.
+        double left_dist_inches = LeftDistSensor.get() / 25.4;
+        double back_dist_inches = BackDistSensor.get() / 25.4;
+
+        // Keep existing pose values as defaults so we only overwrite what we successfully read
+        double new_x = current_pose.x;
+        double new_y = current_pose.y;
+        bool updated = false;
+
+        // Sanity check and compute X from the left sensor (ignoring glitches or out-of-range readings)
+        if (left_dist_inches > 2.0 && left_dist_inches < 50.0) {
+            new_x = LEFT_WALL_X + left_dist_inches + LEFT_DISTANCE_SENSOR_OFFSET;
+            updated = true;
+        }
+
+        // Sanity check and compute Y from the back sensor
+        if (back_dist_inches > 2.0 && back_dist_inches < 50.0) {
+            new_y = BACK_WALL_Y + back_dist_inches + BACK_DISTANCE_SENSOR_OFFSET;
+            updated = true;
+        }
+
+        // If a valid wall reading was made, apply the correction to Lemlib
+        if (updated) {
+            // Overwrite X and Y, but keep our current heading
+            chassis.setPose(new_x, new_y, current_heading, false);
+        }
+    }
+}
+
 
 //Real autonomous program template
 //Toggle shift
@@ -159,20 +226,29 @@ void opcontrol() {
 	// Motorized Claw control
 	if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 	ScoringMotor1.move_velocity(600);
-	IntakeMotor.move_velocity(600);
-	IntakeMotor2.move_velocity(-600);
+	
 	}
 	else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 		ScoringMotor1.move_velocity(-600);
-		IntakeMotor.move_velocity(-600);
-		IntakeMotor2.move_velocity(600);
+		
 	}
 	else {
 		ScoringMotor1.move_velocity(0);
-		IntakeMotor.move_velocity(0);
-		IntakeMotor2.move_velocity(0);
+		
 	}
-// Elevator Control
+
+	// Matchload Button
+if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+	pros::lcd::print(9, "Line 9:Button X");
+	clawDown();
+	while (bumper_switch.get_value() == 0) {
+		elevatorDown(100, 500);
+	}
+
+	
+	}
+
+	// Elevator control
 
 if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 	ElevatorMotor1.brake();
@@ -198,11 +274,14 @@ else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 
 
 // Pneumatic
-if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {  // If X is pressed, toggle Pneumatic
+if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {  // If X is pressed, toggle Pneumatic
 	Pneumatic = !Pneumatic;
 	ClawPneumatic.set_value(Pneumatic);
 }
 
+// if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+// 	ToggleMotor.move_velocity(300);
+// }
 // 	// Color sensor for blue case
 // 	double color = ColorSensor.get_hue();
 // 	if (color >= 235 && color <= 275 && IntakeMotor.get_actual_velocity() > 0) {
@@ -253,34 +332,34 @@ void moveHome() {
 	chassis.moveToPoint(0, 0, 800, {.forwards = false, .maxSpeed = 200});
 	chassis.waitUntilDone();
 }
-void firstPose() {
+void resetPoseNoWait() {
 	chassis.setPose(0,0,0);
 }
-void scorePin() {
-	ScoringMotor1.move_velocity(-600);
-	pros::delay(500);
+void scorePin(int speed, float time) {
+	ScoringMotor1.move_velocity(-speed);
+	pros::delay(time);
 	ScoringMotor1.move_velocity(0);
 }
-void pickupPin() {
-	ElevatorMotor1.move_velocity(600);
-	ElevatorMotor2.move_velocity(-600);
-	ScoringMotor1.move_velocity(600);
-	pros::delay(1000);
+void pickupPin(int elevatorspeed, int clawspeed, float time) {
+	ElevatorMotor1.move_velocity(elevatorspeed);
+	ElevatorMotor2.move_velocity(-elevatorspeed);
+	ScoringMotor1.move_velocity(clawspeed);
+	pros::delay(time);
 	ElevatorMotor1.move_velocity(0);
 	ElevatorMotor2.move_velocity(0);
-	ScoringMotor1.move_velocity(600);
+	ScoringMotor1.move_velocity(0);
 }
-void elevatorUp(float time) {
-	ElevatorMotor1.move_velocity(-600);
-	ElevatorMotor2.move_velocity(600);
+void elevatorUp(int speed, float time) {
+	ElevatorMotor1.move_velocity(-speed);
+	ElevatorMotor2.move_velocity(speed);
 	pros::delay(time);
 	ElevatorMotor1.move_velocity(0);
 	ElevatorMotor2.move_velocity(0);
 }
 
-void elevatorDown(float time) {
-	ElevatorMotor1.move_velocity(600);
-	ElevatorMotor2.move_velocity(-600);
+void elevatorDown(int speed, float time) {
+	ElevatorMotor1.move_velocity(speed);
+	ElevatorMotor2.move_velocity(-speed);
 	pros::delay(time);
 	ElevatorMotor1.move_velocity(0);
 	ElevatorMotor2.move_velocity(0);

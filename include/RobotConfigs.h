@@ -12,15 +12,15 @@
 extern pros::Motor ElevatorMotor1;
 extern pros::Motor ElevatorMotor2;
 extern pros::Motor ElevatorMotor3;
+// extern pros::Motor ToggleMotor;
 extern pros::Motor ScoringMotor1;
-extern pros::Motor IntakeMotor;
-extern pros::Motor IntakeMotor2;
 // extern pros::Optical ColorSensor;
 extern pros::Controller master;
 // extern pros::Controller partner;
 
 //Pneumatics
 extern pros::adi::DigitalOut ClawPneumatic;
+extern pros::adi::DigitalIn bumper_switch;
 
 //Drivetrain stuff
 extern pros::MotorGroup leftMotors;
@@ -31,6 +31,6 @@ extern pros::Rotation vertical_encoder;
 // extern lemlib::TrackingWheel horizontal_tracking_wheel;
 extern pros::Rotation horizontal_encoder;
 extern pros::Imu imu;
-extern pros::Distance YDistSensor;
-extern pros::Distance XDistSensor;
+extern pros::Distance LeftDistSensor;
+extern pros::Distance BackDistSensor;
 #endif // PROS_ROBOT_CONFIG_H_
