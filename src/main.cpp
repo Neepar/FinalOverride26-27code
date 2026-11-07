@@ -93,17 +93,17 @@ void arctanfunction (double targetX, double targetY) {
 
 void autonomous() {
 resetPoseNoWait();
-chassis.moveToPose(-15, 14, -90, 2000, {.lead = 0.5});
+chassis.moveToPose(-15, 14, -90, 1800, {.lead = 0.5});
 chassis.waitUntilDone();
 scorePin(600, 1000);
 elevatorUp(300, 500);
-chassis.moveToPose(1.2, 14, -90, 2000, {.forwards=false});
+chassis.moveToPoint(1.2, 14, 2000, {.forwards=false, .maxSpeed=60});
 pros::delay(1000);
 chassis.moveToPose(-20, 25, -30, 2000, {.lead=0.02, .maxSpeed=60}); //Was 25 before
 chassis.waitUntilDone();
 pickupPin(600, 600, 1500);
-elevatorUp(600, 700);
-chassis.turnToPoint(-24.85, 24.98, 800);
+elevatorUp(600, 750);
+chassis.turnToPoint(-24.85, 24.98, 2000);
 chassis.moveToPoint(-24.8, 21.5, 2000, {.maxSpeed=60});
 chassis.waitUntilDone();
 scorePin(600, 1000);
@@ -112,10 +112,12 @@ chassis.moveToPoint(-20, 40, 2000, {.forwards=false});
 chassis.moveToPose(-40.93, 18.5, -132.08, 2000, {.lead=0.25, .maxSpeed=60});
 chassis.waitUntilDone();
 pickupPin(600, 600, 1200);
-elevatorUp(600, 110);
-chassis.moveToPose(-30, 18.5, 35, 2000, {.lead=0.6,.maxSpeed=60});
+elevatorUp(600, 1500);
+chassis.turnToHeading(-270, 800);
+chassis.moveToPoint(-30, 18.5, 2000, {.maxSpeed=60});
 chassis.waitUntilDone();
-scorePin(600, 1000);
+scorePin(600, 800);
+elevatorUp(100, 500);
 
 
 
